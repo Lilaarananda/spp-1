@@ -1,319 +1,390 @@
- <?php
+<?php
+class Admin extends Controller
+{
+    public function index()
+    {
+        $data["judul"] = "Dashboard Admin";
+        $data["name"] = "Admin";   
+        $this->view("templates/header", $data);
+        $this->view("templates/sidebar/admin", $data);  
+        $this->view("admin/home/index",$data);  
+        $this->view("templates/footer");
+    }
 
- class Admin extends Controller{
-  public function index() {
-    $data = [
-      'user' => $this->model("User_model")->getAllUsers(),
-    ];
-    $this->view("templates/header");
-    $this->view("admin/index");
-    $this->view("templates/footer");
-  }
+    
+     public function kelas()
+    {
+        $data["judul"] = "Data Kelas";
+        $data["name"] = "Admin";
+        $data["kelas"] = $this->model("Kelas_model")->getAllKelas();
+        $this->view("templates/header", $data);
+        $this->view("templates/sidebar/admin", $data);
+        $this->view("admin/kelas/index", $data);
+        $this->view("templates/footer");
+    }
 
-  public function Petugas(){
-    $data = [
-      'petugas' =>$this->model("petugas_model")->getAllPetugas(),
-    ];
-    $this->view("templates/header/petugas");
-    $this->view("admin/petugas/index");
-    $this->view("templates/footer");
-  }
+    public function tambahKelas()
+    {
+        if ($this->model("Kelas_model")->tambahKelas($_POST) > 0) {
+            header("Location: " . BASE_URL . "admin/kelas");
+            exit;
+        }
+    }
 
-  public function siswa(){
-    $data = [
-      'siswa' =>$this->model("siswa_model")->getAllSiswa(),
-    ];
-    $this->view("templates/header/siswa");
-    $this->view("admin/siswa/index");
-    $this->view("templates/footer");
-  }
+    public function hapusKelas($id_kelas)
+    {
+        if ($this->model("Kelas_model")->hapusKelas($id_kelas) > 0) {
+            header("Location: " . BASE_URL . "admin/kelas");
+            exit;
+        }
+    }
 
-  public function kelas(){
-    $data = [
-        'kelas' => $this->model("Kelas_model")->getAllKelas(),
-    ];
-    $this->view("templates/header/kelas");
-    $this->view("admin/kelas/index");
-    $this->view("templates/footer");
-}
+    public function editKelas($id_kelas)
+    {
+        $data["judul"] = "Data Kelas";
+        $data["name"] = "Admin";
+        $data["kelas"] = $this->model("Kelas_model")->getKelasById($id_kelas);
 
-  // add //
-  public function addPetugas()
-  {
-    $this->view("templates/header");
-    $this->view("admin/Petugas/add");
-    $this->view("templates/footer");
-  }
+        $this->view("templates/header", $data);
+        $this->view("templates/sidebar/admin", $data);
+        $this->view("admin/kelas/edit", $data);
+        $this->view("templates/footer");
+    }
 
-  public function addUser() {
-    $this->view("templates/header");
-    $this->view("admin/User/add");
-    $this->view("templates/footer");
-  }
+    public function prosesEditKelas()
+    {
+        if ($this->model("Kelas_model")->editKelas($_POST)) {
+            header("Location: " . BASE_URL . "admin/kelas");
+            exit;
+        }
+        
+    }
+    public function pembayaran()
+    {
+        $data["judul"] = "Data Pembayaran";
+        $data["name"] = "Admin";
+        $data["pembayaran"] = $this->model("Pembayaran_model")->getAllPembayaran();
+        $this->view("templates/header", $data);
+        $this->view("templates/sidebar/admin", $data);
+        $this->view("admin/pembayaran/index", $data);
+        $this->view("templates/footer");
+    }
 
-  public function addSiswa() {
-     $this->view("templates/header");
-     $this->view("admin/Siswa/add");
-     $this->view("templates/footer");
-  }
+    public function tambahPembayaran()
+    {
+        if ($this->model("Pembayaran_model")->tambahPembayaran($_POST) > 0) {
+            header("Location: " . BASE_URL . "admin/pembayaran");
+            exit;
+        }
+    }
 
-  public function addKelas(){
-    $this->view("templates/header");
-    $this->view("admin/Kelas/Add");
-    $this->view("templates/footer");
-  }
-// end add
+    public function hapusPembayaran($id)
+    {
+        if ($this->model("Pembayaran_model")->hapusPembayaran($id)) {
+            header("Location: " . BASE_URL . "admin/pembayaran");
+            exit;
+        }
+    }
 
-// add Act
-public function tambahKelasAct(){
-  if($this->model("Kelas_model")->tambahPengguna($_POST) > 0){
-      $id_pengguna = $this->model("Kelas_model")->getLastInsertedId();
-      if($this->model("Kelas_model")->tambahSiswa($_POST, $id_pengguna) > 0){
-          Flasher::setFlash("Kelas", "Berhasil Ditambahkan", "success");
-          Redirect::to("admin/Kelas");
-      } else{
-          Flasher::setFlash("Kelas", "Gagal Ditambahkan", "danger");
-          Redirect::to("admin/Kelas");
-      }
-  } else{
-      Flasher::setFlash("Kelas", "Gagal Ditambahkan", "danger");
-      Redirect::to("admin/Kelas");
-  }
-}
-public function tambahPetugasAct(){
-        if($this->model("Petugas_model")->tambahPengguna($_POST) > 0){
-          $id_pengguna = $this->model("Petugas_model")->getLastInsertedId();
-          if($this->model("Petugas_model")->tambahSiswa($_POST, $id_pengguna) > 0){
-              Flasher::setFlash("Petugas", "Berhasil Ditambahkan", "success");
-              Redirect::to("admin/Petugas");
-          } else{
-              Flasher::setFlash("Petugas", "Gagal Ditambahkan", "danger");
-              Redirect::to("admin/Petugas");
-          }
-      } else{
-          Flasher::setFlash("Petugas", "Gagal Ditambahkan", "danger");
-          Redirect::to("admin/Petugas");
-      }
-  }
+    public function editPembayaran($id)
+    {
+        $data["judul"] = "Data Pembayaran";
+        $data["name"] = "Admin";
+        $data["pembayaran"] = $this->model("Pembayaran_model")->getPembayaranById($id);
+        $this->view("templates/header", $data);
+        $this->view("templates/sidebar/admin", $data);
+        $this->view("admin/pembayaran/edit", $data);
+        $this->view("templates/footer");
+    }
 
-public function tambahSiswaAct(){
-  if($this->model("Siswa_model")->tambahPengguna($_POST) > 0){
-      $id_pengguna = $this->model("Siswa_model")->getLastInsertedId();
-      if($this->model("User_model")->tambahSiswa($_POST, $id_pengguna) > 0){
-          Flasher::setFlash("Siswa", "Berhasil Ditambahkan", "success");
-          Redirect::to("admin/siswa");
-      } else{
-          Flasher::setFlash("Siswa", "Gagal Ditambahkan", "danger");
-          Redirect::to("admin/siswa");
-      }
-  } else{
-      Flasher::setFlash("Siswa", "Gagal Ditambahkan", "danger");
-      Redirect::to("admin/siswa");
-  }
-}
+    public function prosesEditPembayaran()
+    {
+        if ($this->model("Pembayaran_model")->editPembayaran($_POST)) {
+            header("Location: " . BASE_URL . "admin/pembayaran");
+            exit;
+        }
+    }
 
-// edit
-  public function editPetugas($id) {
-  $data = [
-    'petugas' => $this->model("Petugas_model")->getPetugasById($id),
-  ];
-  $this->view("templates/header");
-  $this->view("admin/Petugas/edit");
-  $this->view("templates/footer");
-  }
+    public function petugas()
+    {
+        $data = [
+            "judul" => "Data Petugas",
+            "name" => "Admin",
+            "pengguna" => $this->model("Pengguna_model")->getAllPengguna(),
+            "petugas" => $this->model("Petugas_model")->selectAllPetugas()
+        ];
+        $this->view("templates/header", $data);
+        $this->view("templates/sidebar/admin", $data);
+        $this->view("admin/petugas/index", $data);
+        $this->view("templates/footer");
+    }
 
-  public function editKelas($data) {
-    $data = [
-      'kelas' =>$this->model("Kelas_model")->getKelasByData($data),
-    ];
-    $this->view("templates/header");
-    $this->view("admin/Kelas/edit");
-    $this->view("template/footer");
-  }
+    public function tambahPetugas()
+    {
+        if ($this->model("Petugas_model")->tambahPetugas($_POST) > 0) {
+            header("Location: " . BASE_URL . "admin/petugas");
+            exit;
+        }
+    }
 
-  public function editUser($id)
-  {
-    $data = [
-      'user' => $this->model("user_model")->getUserById($id),
-    ];
-    $this->view("template/header");
-    $this->view("admin/User/edit");
-    $this->view("templates/footer");
-  }
+    public function hapusPetugas()
+    {
+        if ($this->model("Petugas_model")->hapusPetugas($_POST["id_petugas"]) > 0) {
+            header("Location: " . BASE_URL . "admin/petugas");
+            exit;
+        }
+    }
 
-  public function editSiswa($data){
-    $data = [
-      'siswa' =>$this->model("siswa_model")->getSiswaByData($data),
-    ];
-    $this->view("templates/header");
-    $this->view("admin/Siswa/edit");
-    $this->view("templates/footer");
-  }
-// end edit
+    public function editPetugas($id_petugas)
+    {
+        $data = [
+            "judul" => "Data Petugas",
+            "name" => "Admin",
+            "petugas" => $this->model("Petugas_model")->getPetugasById($id_petugas),
+            "pengguna" => $this->model("Pengguna_model")->getAllPengguna()
+        ];
 
-// edit act
-public function editKelasAct(){
-  if($this->model("Kelas_model")->editKelas($_POST) > 0){ 
-      if($this->model("Kelas_model")->editKelas($_POST) > -1){
-          Flasher::setFlash("kelas", "Berhasil Diedit", "success");
-          Redirect::to("admin/Kelas");
-      } else{
-          Flasher::setFlash("Kelas", "Gagal Diedit", "danger");
-          Redirect::to("admin/Kelas");
-      }
-  }
-}
+        $this->view("templates/header", $data);
+        $this->view("templates/sidebar/admin", $data);
+        $this->view("admin/petugas/index", $data);
+        $this->view("templates/footer");
+    }
 
-public function editSiswaAct(){
-  if($this->model("Siswa_model")->editSiswa($_POST) > 0){ 
-      if($this->model("Siswa_model")->editPengguna($_POST) > -1){
-          Flasher::setFlash("Siswa", "Berhasil Diedit", "success");
-          Redirect::to("admin/Siswa");
-      } else{
-          Flasher::setFlash("Siswa", "Gagal Diedit", "danger");
-          Redirect::to("admin/Siswa");
-      }
-  }
-}
+    public function prosesEditPetugas()
+    {
+        if ($this->model("Petugas_model")->editPetugas($_POST)) {
+            header("Location: " . BASE_URL . "admin/petugas");
+            exit;
+        }
+    }
 
-public function editPetugasAct(){
-  if($this->model("Petugas_model")->editPetugas($_POST) > 0){ 
-      if($this->model("Petugas_model")->editPengguna($_POST) > -1){
-          Flasher::setFlash("Petugas", "Berhasil Diedit", "success");
-          Redirect::to("admin/petugas");
-      } else{
-          Flasher::setFlash("Petugas", "Gagal Diedit", "danger");
-          Redirect::to("admin/petugas");
-      }
-  }
-}
+    public function siswa()
+    {
+        $data = [
+            "judul" => "Data Siswa",
+            "name" => "Admin",
+            "siswa" => $this->model("Siswa_model")->selectAllSiswa(),
+            "kelas" => $this->model("Kelas_model")->getAllKelas(),
+            "pengguna" => $this->model("Pengguna_model")->getAllPengguna(),
+            "pembayaran" => $this->model("Pembayaran_model")->getAllPembayaran(),
+        ];
 
-  // delete
-  public function deleteKelas(){
-    if($this->model("Kelas_model")->deleteKelas($_POST) > 0){ 
-        Flasher::setFlash("Kelas", "Berhasil Dihapus", "success");
-        Redirect::to("admin/Kelas");
-    } else{
-        Flasher::setFlash("Kelas", "Gagal Dihapus", "danger");
-        Redirect::to("admin/Kelas");
+        $this->view("templates/header", $data);
+        $this->view("templates/sidebar/admin", $data);
+        $this->view("admin/siswa/index", $data);
+        $this->view("templates/footer");
+    }
+
+    public function tambahSiswa()
+    {
+        $data = [
+            "username" => $_POST["nis"],
+            "password" => $_POST["password"],
+            "role" => "3"
+        ];
+
+        if ($this->model("Pengguna_model")->tambahPengguna($data)) {
+            $pengguna = $this->model("Pengguna_model")->getPenggunaByUsername($data["username"]);
+
+            $data = [
+                "nisn" => $_POST["nisn"],
+                "nis" => $_POST["nis"],
+                "nama" => $_POST["nama"],
+                "alamat" => $_POST["alamat"],
+                "telepon" => $_POST["telepon"],
+                "id_kelas" => $_POST["id_kelas"],
+                "id_pembayaran" => $_POST["id_pembayaran"],
+                "id_pengguna" => $_POST["id_pengguna"]
+            ];
+        }
+
+        if ($this->model("Siswa_model")->tambahSiswa($_POST) > 0) {
+            header("Location: " . BASE_URL . "admin/siswa");
+            exit;
+        }
+    }
+
+    public function hapusSiswa($id_siswa)
+    {
+        if ($this->model("Siswa_model")->hapusSiswa($id_siswa) > 0) {
+            header("Location: " . BASE_URL . "admin/siswa");
+            exit;
+        }
+    }
+
+    public function editSiswa($id_siswa)
+    {
+        $pengguna = $this->model("Pengguna_model")->getAllPengguna();
+
+        $data = [
+            "judul" => "Data Siswa",
+            "name" => "Admin",
+            "siswa" => $this->model("Siswa_model")->getSiswaById($id_siswa),
+            "kelas" => $this->model("Kelas_model")->getAllKelas(),
+            "pengguna" => $pengguna,
+            "pembayaran" => $this->model("Pembayaran_model")->getAllPembayaran()
+        ];
+
+        $this->view("templates/header", $data);
+        $this->view("templates/sidebar/admin", $data);
+        $this->view("admin/siswa/edit", $data);
+        $this->view("templates/footer");
+    }
+
+    public function prosesEditSiswa()
+    {
+        $data = [
+            "username" => $_POST["nis"],
+            "password" => $_POST["nis"],
+            "role" => 3
+        ];
+
+        if ($this->model("Pengguna_model")->editPengguna($data)) {
+            $data = [
+                "id_siswa" => $_POST["id_siswa"],
+                "nis" => $_POST["nis"],
+                "nisn" => $_POST["nisn"],
+                "nama" => $_POST["nama"],
+                "alamat" => $_POST["alamat"],
+                "telepon" => $_POST["telepon"],
+                "id_kelas" => $_POST["id_kelas"],
+                "id_pengguna" => $_POST["id_pengguna"],
+                "id_pembayaran" => $_POST[$data["pengguna"]["id_pengguna"]]
+            ];
+        }
+
+        if ($this->model("Siswa_model")->editSiswa($_POST) > 0) {
+            header("Location: " . BASE_URL . "admin/siswa");
+            exit;
+        }
+    }
+
+
+    public function pengguna()
+    {
+        $data = [
+            "judul" => "Data Pengguna",
+            "name" => "Admin",
+            "pengguna" => $this->model("Pengguna_model")->getAllPengguna(),
+            "petugas" => $this->model("Petugas_model")->getAllPetugas()
+        ];
+
+        $this->view("templates/header", $data);
+        $this->view("templates/sidebar/admin", $data);
+        $this->view("admin/pengguna/index", $data);
+        $this->view("templates/footer");
+    }
+
+    public function tambahPengguna()
+    {
+        if ($this->model("Pengguna_model")->tambahPengguna($_POST) > 0) {
+            header("Location: " . BASE_URL . "admin/pengguna");
+            exit;
+        }
+    }
+
+    public function hapusPengguna($id_pengguna)
+    {
+        if ($this->model("Pengguna_model")->hapusPengguna($id_pengguna)) {
+            header("Location: " . BASE_URL . "admin/pengguna");
+            exit;
+        }
+    }
+
+    public function editPengguna($id_pengguna)
+    {
+        $data = [
+            "judul" => "Data Pengguna",
+            "name" => "Admin",
+            "pengguna" => $this->model("Pengguna_model")->getPenggunaById($id_pengguna),
+            "petugas" => $this->model("Petugas_model")->getAllPetugas()
+        ];
+
+        $this->view("templates/header", $data);
+        $this->view("templates/sidebar/admin", $data);
+        $this->view("admin/pengguna/edit", $data);
+        $this->view("templates/footer");
+    }
+
+    public function prosesEditPengguna()
+    {
+        if ($this->model("Pengguna_model")->editPengguna($_POST) > 0) {
+            header("Location: " . BASE_URL . "admin/pengguna");
+            exit;
+        }
+    }
+
+    public function transaksi()
+    {
+        $data = [
+            "judul" => "Entri Transaksi",
+            "name" => "Admin",
+            "siswa" => $this->model("Siswa_model")->getAllSiswa(),
+            "transaksi" => $this->model("Transaksi_model")->getAllTransaksi()
+        ];
+        $this->view("templates/header", $data);
+        $this->view("templates/sidebar/admin", $data);
+        $this->view("admin/transaksi/index", $data);
+        $this->view("templates/footer");
+    }
+
+    public function detailTransaksi($id_siswa)
+    {
+        $siswa = $this->model("Siswa_model")->getSiswaById($id_siswa);
+        $transaksi = $this->model("Transaksi_model")->getTransaksiByIdSiswa($siswa["id_siswa"]);
+
+        $bulan = [
+            [
+                "juli", "agustus", "september", "oktober", "november", "desember",
+            ],
+            [
+                "januari", "februari", "maret", "april", "mei", "juni",
+            ]
+        ];
+
+        $bulan_dibayar = [];
+
+        foreach ($transaksi as $t) {
+            array_push($bulan_dibayar, $t["bulan_dibayar"]);
+        }
+
+        $data = [
+            "judul" => "Detail Pembayaran",
+            "name" => "Admin",
+            "siswa" => $siswa,
+            "transaksi" => $transaksi,
+            "bulan" => $bulan,
+            "bulan_dibayar" => $bulan_dibayar
+        ];
+
+        $this->view("templates/header", $data);
+        $this->view("templates/sidebar/admin", $data);
+        $this->view("admin/transaksi/detail", $data);
+        $this->view("templates/footer");
+    }
+
+    public function storeTransaksi()
+    {
+        if ($this->model("Transaksi_model")->tambahTransaksi($_POST) > 0) {
+            header("Location: " . BASE_URL . "admin/transaksi");
+        }
+    }
+
+    public function history($id)
+    {
+        // $id = $_SESSION["id_siswa"];
+
+        $history = $this->model("Transaksi_model")->getTransaksiByIdSiswa($id);
+
+        $data = [
+            "history" => $history,
+            "judul" => "History Pembayaran",
+            "name" => "Siswa"
+        ];
+
+        $this->view("templates/header", $data);
+        $this->view("templates/sidebar/admin", $data);
+        $this->view("admin/history/index", $data);
+        $this->view("templates/footer");
     }
 }
-
-  public function deleteSiswa(){
-    if($this->model("Siswa_model")->deleteSiswa($_POST) > 0){ 
-        Flasher::setFlash("Siswa", "Berhasil Dihapus", "success");
-        Redirect::to("admin/Siswa");
-    } else{
-        Flasher::setFlash("Siswa", "Gagal Dihapus", "danger");
-        Redirect::to("admin/Siswa");
-    }
-}
-
-  public function deletePetugas(){
-    if($this->model("User_model")->deletePetugas($_POST) > 0){ 
-        Flasher::setFlash("Petugas", "Berhasil Dihapus", "success");
-        Redirect::to("admin/petugas");
-    } else{
-        Flasher::setFlash("Petugas", "Gagal Dihapus", "danger");
-        Redirect::to("admin/petugas");
-    }
-}
-
-
-// Pembayaran
-public function pembayaran(){
-  $data = [
-    'pembayaran' => $this->$this->model("pembayaran_model")->getAllPembayaran(),
-  ];
-  $this->view("templates/header");
-  $this->view("admin/pembayaran/add");
-  $this->view("templates/footer");
-}
-
-public function tambahPembayaranAct(){
-  if($this->model("Pembayaran_model")->tambahPembayaran($_POST) > 0){
-      Flasher::setFlash("Pembayaran", "Berhasil Ditambahkan", "success");
-      Redirect::to("admin/pembayaran");
-  } else{
-      Flasher::setFlash("Pembayaran", "Gagal Ditambahkan", "danger");
-      Redirect::to("admin/pembayaran");            
-  }
-}
-
-public function editPembayaranAct(){
-  if($this->model("Pembayaran_model")->editPembayaran($_POST) > 0){
-      Flasher::setFlash("Pembayaran", "Berhasil Diedit", "success");
-      Redirect::to("admin/pembayaran");
-  } else{
-      Flasher::setFlash("Pembayaran", "Gagal Diedit", "danger");
-      Redirect::to("admin/pembayaran");
-  }
-}
-
-public function deletePembayaranAct(){
-  if($this->model("Pembayaran_model")->deletePembayaran($_POST) > 0){
-      Flasher::setFlash("Pembayaran", "Berhasil Dihapus", "success");
-      Redirect::to("admin/pembayaran");
-  } else{
-      Flasher::setFlash("Pembayaran", "Gagal Dihapus", "danger");
-      Redirect::to("admin/pembayaran");
-  }
-}
-
-// transaksi
-public function transaksi(){
-  $data = [
-      "siswa" => $this->model("User_model")->getAllSiswa(),
-      "kelas" => $this->model("Kelas_model")->getAllKelas(),
-  ];
-
-  $this->view("templates/header");
-  $this->view("admin/transaksi/index");
-  $this->view("templates/footer");
-}
-
-public function transaksiDetailKelas($kelas_id){
-  $data = [
-      "siswa" => $this->model("User_model")->getAllSiswaByKelasId($kelas_id),
-  ];
-
-  $this->view("templates/header");
-  $this->view("admin/transaksi/detailKelas");
-  $this->view("templates/footer");
-}
-
-public function transaksiDetailSiswa($id, $pembayaran_id){
-  $data = [
-      "siswa" => $this->model("User_model")->getSiswaById($id),
-      'transaksi' => $this->model("Transaksi_model")->getTransaksiBySiswaPembayaranId($id, $pembayaran_id),
-      'totalPembayaran' => $this->model("Transaksi_model")->countTotalPembayaranSiswaById($id),
-      'bulan' =>  ['Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni'],
-      'created' => true,
-  ];
-
-  $this->view("templates/header");
-  $this->view("admin/transaksi/detailSiswa");
-  $this->view("templates/footer");
-}
-
-public function transaksiAct(){
-  if($this->model("Transaksi_model")->transaksi($_POST) > 0){
-      Flasher::setFlash("Transaksi SPP", "Berhasil", "success");
-      Redirect::to("admin/transaksiDetailSiswa/{$_POST['siswa_id']}/{$_POST['pembayaran_id']}");
-  } else{
-      Flasher::setFlash("Transaksi SPP", "Gagal", "danger");
-      Redirect::to("admin/transaksiDetailSiswa/{$_POST['siswa_id']}/{$_POST['pembayaran_id']}");
-  }
-}
-
-public function historyTransaksi(){
-  $data = [
-      'transaksi' => $this->model("Transaksi_model")->getAllTransaksi(),
-      'section' => 'history_transaksi',
-  ];
-  
-  $this->view("templates/header");
-  $this->view("admin/transaksi/historyTransaksi");
-  $this->view("templates/footer");
-}
- }

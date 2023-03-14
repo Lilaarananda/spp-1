@@ -2,6 +2,6 @@
 
 class Redirect{
     public static function to($path){
-        header("Location: " . BASE_URL. "/$path");
+        header("Location: " . BASE_URL . "/$path");
     }
 }

@@ -34,7 +34,7 @@
         <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Pilihan :</h6>
             <!-- <a class="collapse-item" href=/admin_pembayaran">Pembayaran</a> -->
-            <a class="collapse-item" href="<?=BASE_URL?>/siswa_transaksi">History</a>
+            <a class="collapse-item" href="<?=BASE_URL?>/siswa/transaksiSiswa">History</a>
         </div>
     </div>
 </li>
