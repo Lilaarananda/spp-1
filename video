@@ -1,0 +1,5 @@
+<div class="col-xl-8 col-lg-7 mx-auto">
+                <video autoplay controls>
+                  <source src="<?= BASE_URL; ?>img/Waves.mp4" type="video/mp4">
+                </video>
+              </div>
